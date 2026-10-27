@@ -27,7 +27,7 @@ def main():
     todo = [b for b in BATCHES if b[:2] >= a.start and (a.only is None or b.startswith(a.only))]
     log = []
     for b in todo:
-        path = ROOT / "notebooks" / f"{b}.ipynb"
+        path = next((ROOT / "notebooks").rglob(f"{b}.ipynb"))
         nb = nbformat.read(path, as_version=4)
         t0 = time.time()
         print(f"[batch {b}] running…", flush=True)

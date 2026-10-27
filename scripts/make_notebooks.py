@@ -10,7 +10,7 @@ NB = ROOT / "notebooks"
 
 SETUP = """import os, sys, json, subprocess
 from pathlib import Path
-ROOT = Path.cwd() if (Path.cwd() / "src").exists() else Path.cwd().parent
+ROOT = next(p for p in (Path.cwd(), *Path.cwd().parents) if (p / "src").is_dir())
 os.chdir(ROOT); sys.path.insert(0, str(ROOT))
 import pandas as pd
 from IPython.display import Image, Markdown, display
@@ -105,8 +105,9 @@ def main():
         nb = nbf.v4.new_notebook()
         nb.metadata["kernelspec"] = {"name": "prahar", "display_name": "PRAHAR (py3.13)", "language": "python"}
         nb.cells = [nbf.v4.new_markdown_cell(c) if k == "md" else nbf.v4.new_code_cell(c) for k, c in cells]
-        nbf.write(nb, NB / f"{name}.ipynb")
-        print("wrote", f"notebooks/{name}.ipynb")
+        target = next(NB.rglob(f"{name}.ipynb"))
+        nbf.write(nb, target)
+        print("wrote", target.relative_to(ROOT))
 
 
 if __name__ == "__main__":
